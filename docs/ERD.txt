@@ -1,0 +1,200 @@
+title Workout App ERD
+colorMode bold
+
+// ---------- Users & Billing ----------
+users [icon: user, color: blue] {
+  id uuid pk
+  email string
+  password_hash string
+  display_name string
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+subscriptions [icon: credit-card, color: green] {
+  id uuid pk
+  user_id uuid
+  tier string // free | paid
+  status string // active | canceled | past_due
+  started_at timestamp
+  renews_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+// ---------- Exercise Library ----------
+muscle_groups [icon: activity, color: red] {
+  id uuid pk
+  name string // e.g. chest, quads, lats
+  category string // push | pull | legs | core
+}
+
+exercises [icon: dumbbell, color: orange] {
+  id uuid pk
+  user_id uuid // null = global library exercise, set = user's custom exercise
+  name string
+  equipment_type string // barbell | dumbbell | machine | cable | bodyweight | band | kettlebell
+  is_unilateral boolean
+  is_custom boolean
+  instructions text
+  media_url string
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+exercise_muscle_groups [icon: link, color: orange] {
+  id uuid pk
+  exercise_id uuid
+  muscle_group_id uuid
+  role string // primary | secondary
+}
+
+variants [icon: settings, color: purple] {
+  id uuid pk
+  exercise_id uuid
+  user_id uuid
+  name string // user-defined, e.g. "Cable Stack A", "Home"
+  is_default boolean
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+// ---------- Routines / Programs ----------
+routines [icon: clipboard, color: blue] {
+  id uuid pk
+  user_id uuid
+  name string
+  is_ai_generated boolean
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+routine_exercises [icon: list, color: blue] {
+  id uuid pk
+  routine_id uuid
+  exercise_id uuid
+  order_index int
+  target_sets int
+  target_reps string // e.g. "8-12"
+  target_rpe decimal
+}
+
+// ---------- Logged Workouts ----------
+workouts [icon: calendar, color: teal] {
+  id uuid pk
+  user_id uuid
+  routine_id uuid // nullable, freeform workouts allowed
+  started_at timestamp
+  ended_at timestamp
+  duration_seconds int
+  notes text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+sets [icon: check-square, color: teal] {
+  id uuid pk
+  workout_id uuid
+  exercise_id uuid
+  variant_id uuid
+  side string // left | right | null (bilateral)
+  set_type string // normal | warmup | dropset
+  superset_group_id uuid // nullable, links paired superset sets
+  order_index int
+  weight decimal
+  reps int
+  rpe decimal
+  is_pr boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+body_weight_logs [icon: trending-up, color: green] {
+  id uuid pk
+  user_id uuid
+  weight decimal
+  unit string // kg | lb
+  logged_at timestamp
+  created_at timestamp
+}
+
+// ---------- Health / Injury ----------
+injury_flags [icon: alert-triangle, color: red] {
+  id uuid pk
+  user_id uuid
+  muscle_group_id uuid // nullable
+  exercise_id uuid // nullable
+  description text
+  started_at timestamp
+  resolved_at timestamp // nullable = still active
+  created_at timestamp
+}
+
+// ---------- Derived / Computed Data ----------
+daily_metrics [icon: bar-chart, color: yellow] {
+  id uuid pk
+  user_id uuid
+  date date
+  recovery_score decimal
+  fatigue_score decimal
+  total_volume decimal
+  created_at timestamp
+}
+
+insights [icon: zap, color: yellow] {
+  id uuid pk
+  user_id uuid
+  exercise_id uuid // nullable
+  type string // stall_detected | pr_milestone | consistency_streak | level_up | deload_suggested
+  message string
+  generated_at timestamp
+  read_at timestamp // nullable
+}
+
+// ---------- Gamification ----------
+muscle_group_scores [icon: award, color: pink] {
+  id uuid pk
+  user_id uuid
+  muscle_group_id uuid
+  period_start date // weekly snapshot
+  points decimal
+  volume_this_period decimal
+  rolling_avg_volume decimal // user's own trailing average
+  current_level int // can decrease after sustained inactivity
+  peak_level int // all-time best, never decreases
+  created_at timestamp
+}
+
+// ---------- Relationships ----------
+users.id < subscriptions.user_id
+users.id < exercises.user_id
+users.id < variants.user_id
+users.id < routines.user_id
+users.id < workouts.user_id
+users.id < injury_flags.user_id
+users.id < daily_metrics.user_id
+users.id < insights.user_id
+users.id < muscle_group_scores.user_id
+
+exercises.id < variants.exercise_id
+exercises.id < exercise_muscle_groups.exercise_id
+exercises.id < routine_exercises.exercise_id
+exercises.id < sets.exercise_id
+exercises.id < injury_flags.exercise_id
+exercises.id < insights.exercise_id
+
+muscle_groups.id < exercise_muscle_groups.muscle_group_id
+muscle_groups.id < injury_flags.muscle_group_id
+muscle_groups.id < muscle_group_scores.muscle_group_id
+
+routines.id < routine_exercises.routine_id
+routines.id < workouts.routine_id
+
+workouts.id < sets.workout_id
+variants.id < sets.variant_id
+users.id < body_weight_logs.user_id
