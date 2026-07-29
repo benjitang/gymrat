@@ -170,6 +170,33 @@ muscle_group_scores [icon: award, color: pink] {
   created_at timestamp
 }
 
+badges [icon: award, color: gold] {
+  id uuid pk
+  key string // unique slug, e.g. "100_days_2026", "chest_level_10"
+  name string
+  description string
+  icon string
+  category string // consistency | strength | milestone | seasonal | social
+  muscle_group_id uuid // nullable — set if badge is muscle-group-specific, null = overall/account badge
+  criteria_type string // streak | cumulative_count | threshold | level_reached | date_range_count
+  criteria_config jsonb // flexible rule, e.g. {"metric": "workout_days", "target": 100, "year": 2026}
+  is_repeatable boolean // can be earned again (e.g. yearly badges)
+  is_active boolean
+  valid_from timestamp // nullable, for seasonal/year-bound badges
+  valid_until timestamp // nullable
+  created_at timestamp
+  updated_at timestamp
+}
+
+user_badges [icon: check-circle, color: gold] {
+  id uuid pk
+  user_id uuid
+  badge_id uuid
+  earned_at timestamp
+  seen_at timestamp // nullable, for "new badge!" UI notification state
+  created_at timestamp
+}
+
 // ---------- Relationships ----------
 users.id < subscriptions.user_id
 users.id < exercises.user_id
@@ -180,6 +207,9 @@ users.id < injury_flags.user_id
 users.id < daily_metrics.user_id
 users.id < insights.user_id
 users.id < muscle_group_scores.user_id
+users.id < user_badges.user_id
+badges.id < user_badges.badge_id
+muscle_groups.id < badges.muscle_group_id
 
 exercises.id < variants.exercise_id
 exercises.id < exercise_muscle_groups.exercise_id

@@ -84,12 +84,23 @@
 
 ---
 
-## 6. Gamification (needs more design work)
+## 6. Gamification
 
-- Muscle-group progress bars.
-- Points/progress should be based on **effort/consistency relative to the user's own history**, not raw weight — otherwise variant differences (light vs. heavy machine) unfairly skew scoring.
-- Avoid punishing gaps: bars should **decay gradually** toward neutral rather than reset to zero after time off (injury, busy week, etc.).
-- Streaks should probably be measured in **weeks trained**, not consecutive days — more forgiving, matches how lifters actually think.
+**Per-muscle-group leveling**
+- Every muscle group has its own level/XP track (chest, quads, lats, etc.), not one global level.
+- Points/progress based on **effort/consistency relative to the user's own history**, not raw weight — otherwise variant differences (light vs. heavy machine) unfairly skew scoring.
+- Avoid punishing gaps: levels should **decay gradually** toward neutral rather than reset to zero after time off (injury, busy week, etc.).
+- Track both a `current_level` (can drop after sustained inactivity) and a `peak_level` (all-time best, never decreases) — inactivity dents your current standing without erasing what you've already proven.
+- Streaks/consistency should probably be measured in **weeks trained**, not consecutive days — more forgiving, matches how lifters actually think.
+
+**Badges — flat, binary achievements (GitHub-style)**
+- Deliberately **separate from leveling**. Levels are the "real" progression system; badges are lightweight, surprising little rewards layered on top — not a second grind system.
+- **Binary, no progress bars**: a badge is either earned or not. No "62/100 days" tracker UI to build or maintain — this keeps them feeling like fun surprises rather than another checklist to grind.
+- Can be scoped **per muscle group** (e.g. "Reach Level 10 in Chest") or **overall/account-wide** (e.g. "7 days of working out," regardless of which muscle groups were trained).
+- **No tier system** (bronze/silver/gold). If an achievement should escalate, it's a separate badge per threshold (e.g. distinct "7-Day Streak," "30-Day Streak," "90-Day Streak" badges) rather than one badge with tiers — keeps each badge a distinct, nameable moment rather than a ladder.
+- Some badges are **time-bound/seasonal** (e.g. "100 Days in 2026") and won't recur automatically — a fresh badge gets defined for the next year/period if wanted, rather than building generic repeat logic for every badge type.
+- Flexible, rule-based criteria (streaks, cumulative counts, thresholds, level milestones) so new badges can be added without schema changes — evaluated against existing workout/set/level data rather than maintaining a separate running tally.
+- "New badge unlocked" notification moment matters — a small deal is made of it, similar to how GitHub surfaces earned badges.
 
 ---
 
@@ -107,6 +118,8 @@
 - Cold-start problem: what does the app recommend before any workout history exists? (Needs a short onboarding/self-reported baseline flow.)
 - How aggressive should the "different machine?" auto-detect prompt be before it gets annoying.
 - Whether drop-set weight tracking should be revisited later for more detail.
+- Initial badge set / launch list — which achievements ship in MVP vs. get added later.
+- Whether any badges should be repeatable (e.g. recurring monthly badges) or all one-off, given the "flat, no-tier" direction.
 
 ---
 
@@ -116,6 +129,8 @@
 - Social features (feed, following, friend comparisons)
 - Tri-sets / complex circuits beyond supersets
 - Real-time video form analysis (deferred to v2+)
+- Badge tier system (bronze/silver/gold) — escalating achievements are handled as separate distinct badges instead
+- Badge progress bars — badges are binary earned/not-earned, no partial-progress display
 
 ---
 
@@ -123,6 +138,6 @@
 
 **MVP:** Polished UI, fast logging, exercise library + variants (basic), progress charts, generous free tier, auto-progression, AI coach text insights, core analytics, CSV export, offline-first sync.
 
-**V2:** Recovery/fatigue scoring refinements, desktop app, warm-up/plate calculators, exercise substitution, gamification, AI program generator.
+**V2:** Recovery/fatigue scoring refinements, desktop app, warm-up/plate calculators, exercise substitution, gamification (per-muscle-group leveling + badges), AI program generator.
 
 **V3 / Stretch:** Video form analysis, wearable integration, social features.

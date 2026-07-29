@@ -39,7 +39,7 @@ I am going to be referencing AI, spotify's plausible database generated database
 
 Ok I procrastinated a lot lol I am going to move on to some other projects today. I can come back here later, but at least I have those basics set up.
 
-### 2026-07-27
+### 2026-07-28
 
 Most important for today, I want to consider what features will go into my app. What makes my app stand out against other popular apps. To do that, I will just combine the best of other apps and also see common complaints. This will just be me throwing stuff I see in bullet form and I can organize later. Just note the important ideas are there.
 
@@ -68,3 +68,39 @@ Ok I think thats pretty much the big parts of it. I'm going to AI an easier to r
 Based on these features, I'm going to have AI spit out a working database to fit all these based on best practices. I will have to pick at it a little to make sure it fits all my needs but at least the most useful tables and fields will be there. I will save a screenshot and make an md file for how the database works for my features. In the future, if something doesn't work how I want I can just edit those fields. I think after today I can start coding a little bit. 
 
 Nice I have a saved image of [ERD.png](./ERD.png) and I have [SCHEMA.md](./SCHEMA.md) to explain what each table does and can do. I wanted to export my ERD as a draw.io but eraser made it so when i export, it doesnt save the tables, so I dont know what that is about. If I want to look at it, I guess I can always just look at eraser anyway. I'm going to add the coded up schema as a txt file ([ERD.txt](./ERD.txt)) so I can copy and paste if I made a change that broke something. Anytway I think im good to push these changes and work on coding up these tables with `django` tomorrow. 
+
+### 2026-07-29
+I'm going to be learning a bit of stuff behind `django` first so I know where I am jumping into. 
+
+It would seem to create feature I need to make a command like `python manage.py startapp users` to add the feature folder into my root directory. I then have to register the app in my `config/settings.py` within "INSTALLED APPS" to make my django project recognize the app. The users will save users data. I'm going to seperate users and authentication so I'm going to make an authentication app too for logins, registering, and other stuff. I'm going to focus on authentication for this week. I note that `django` already provides `Users` app and `Authentication`, but I want control I should be building these apps on top of the preexisting ones because these have been  tested for years for real security. I just want control and maybe try slight modifications.
+
+Here are what the files for each app does:
+- migrations/ = Stores database schema changes. Every time you modify a model and run makemigrations, Django creates a migration file here that describes how to update the database.
+- migrations/__init__.py = Marks the migrations folder as a Python package so Django can discover and execute migrations.
+- admin.py = Registers models with Django's admin site and customizes how they appear to administrators.
+- apps.py = Defines configuration for the app, such as its name and any startup behavior.
+- models.py = Defines your database models (tables) and the relationships between them.
+- tests.py = Contains automated tests that verify your app behaves correctly.
+- views.py = Contains the code that handles incoming requests, performs business logic (or calls services), and returns a response.
+
+Apparently later it is good to optionally add these files, so with this information what you will:
+- serializers.py = Converts models to and from JSON (commonly used with Django REST Framework).
+- urls.py = Defines the URL routes for this app.
+- services.py = Contains business logic that doesn't belong in models or views (for example, creating a workout plan or awarding XP).
+- permissions.py = Defines who is allowed to access specific endpoints.
+signals.py = Runs code automatically when certain events occur (for example, creating a profile whenever a new user is created).
+- validators.py = Stores reusable validation logic for fields or input data.
+- constants.py = Stores constant values used throughout the app.
+- exceptions.py = Defines custom exception classes for your application.
+- tasks.py = Contains background jobs (commonly used with task queues like Celery).
+- utils.py = Stores small helper functions that don't fit elsewhere.
+
+I note that each app has its own test file so I can remove the tests folder at the root directory.
+
+I want to make a connection with supabase so I'm going to do that. Going to add an .env file and `uv add django-environ` which is the popular way to react .env files in django. Then configure the `settings.py` to read these variables. 
+
+Next I start a new project in `Supabase`. I am only using this for storage so I turn off all security settings since my `django` will ahndle everyting. The architecture I am going for is that frontend connects to my `django` and only `django` connects to supabase for storage of data.
+
+Ok I am finally connected. Just had to configure my .envs for db and then used them to connect in  `settings.json` Databases while also changing the engine from sqlite to postgresql. I had to change supabase connection method to pooler which is IPv4 available. Seems my machine is not iPv6 connection which is what the direct connection protocol needs. I tested connection worked with `python manage.py migrate`. I'm going to just push all my changes. 
+
+I'm going to make another change. I want to add badge rewards to the ERD. The idea is that the levels will show the person's experience while the badges will tell a story of the person's progression. I think leveling up alone won't mean much and won't have them trying to reach anything and I don't really plan on giving rewards so this should be fine. I'm going to push these changes as well. 
